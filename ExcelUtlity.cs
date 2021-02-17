@@ -50,8 +50,7 @@ namespace DataMigrationSQLtoXLSM
                                 {
                                     dataTable = await dataMigrationService.GetPrincipalSummaryTableAsync();
                                 }
-                                else
-                                if (sheet == Sheet3_ProductTable)
+                                else if (sheet == Sheet3_ProductTable)
                                 {
                                     dataTable = await dataMigrationService.getPrincipalProductSummaryTableAsync();
                                 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,31 @@ namespace DataMigrationSQLtoXLSM
         {
             try
             {
+                int period = 2; // trial period
+                string keyName = "Software\\DataMigrationSQLtoXLSM";
+                long ticks = DateTime.Today.Ticks;
+
+                RegistryKey rootKey = Registry.CurrentUser;
+                RegistryKey regKey = rootKey.OpenSubKey(keyName);
+                if (regKey == null) // first time app has been used
+                {
+                    regKey = rootKey.CreateSubKey(keyName);
+                    long expiry = DateTime.Today.AddDays(period).Ticks;
+                    regKey.SetValue("expiry", expiry, RegistryValueKind.QWord);
+                    regKey.Close();
+                }
+                else
+                {
+                    long expiry = (long)regKey.GetValue("expiry");
+                    regKey.Close();
+                    long today = DateTime.Today.Ticks;
+                    if (today > expiry)
+                    {
+                        Console.WriteLine("Your free trial has expired. Please register to continue using the application");
+                        return;
+                    }
+                }
+
 
                 Console.WriteLine("*** DataMigrationSQLtoXML Service Started***");
                 Log.info("***DataMigrationSQLtoXML Service Started***");
