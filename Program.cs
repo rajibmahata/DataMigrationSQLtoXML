@@ -4,20 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataMigrationSQLtoXML
+namespace DataMigrationSQLtoXLSM
 {
     class Program
     {
-        static void Main(string[] args)
+
+        static async Task Main(string[] args)
         {
             try
             {
+
                 Console.WriteLine("*** DataMigrationSQLtoXML Service Started***");
-                Log.info("***IBM_SPP_ExtractVM Service Started***");
+                Log.info("***DataMigrationSQLtoXML Service Started***");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
                 DataMigrationService dataMigrationService = new DataMigrationService();
-                dataMigrationService.ProcessDataMigrationSQLtoXML();
+                await dataMigrationService.ProcessDataMigrationSQLtoXML();
+                watch.Stop();
+
+                Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
                 Console.WriteLine("***DataMigrationSQLtoXML Service End***");
                 Log.info("***DataMigrationSQLtoXML Service End***");
+
 
             }
             catch (Exception ex)
