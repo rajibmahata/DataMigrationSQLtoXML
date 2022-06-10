@@ -1,0 +1,196 @@
+Option Explicit
+
+Const WelcomePage = "Macros"
+
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+
+    Application.CommandBars("Worksheet Menu Bar").Controls("File").Controls("Save As...").Enabled = True
+    Application.CommandBars("Ply").Reset
+    Application.CommandBars("Ply").Enabled = True
+    Application.DisplayAlerts = False
+    ActiveWorkbook.Save
+    
+End Sub
+
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+   SaveAsUI = False
+    Cancel = True
+    'Turn off events to prevent unwanted loops
+    Application.EnableEvents = False
+    
+    'Call customized save routine and set workbook's saved property to true
+    '(To cancel regular saving)
+    Call CustomSave(SaveAsUI)
+    Cancel = True
+    
+    'Turn events back on an set saved property to true
+    Application.EnableEvents = True
+    ThisWorkbook.Saved = True
+End Sub
+
+Private Sub workbook_Open()
+
+Application.CommandBars("Ply").Enabled = False
+
+'Application.OnTime TimeValue("20:59:00"), "Refresh_wb"
+'Application.OnTime TimeValue("18:00:00"), "save_wb"
+
+Dim ComputerName, UserName As String
+ 
+'Getting computer name
+ComputerName = Environ("computername")
+
+'Getting user name
+UserName = Environ("username")
+
+'Assigning value to cell C10 and C11
+
+If (ComputerName = "Laptop-KE11DURK" Or ComputerName = "LAPTOP-KE11DURK" Or ComputerName = "PRFLP01-VARINDE" Or ComputerName = "PRFSRV01-IT" Or ComputerName = "LAPTOP-NB7BO910" Or ComputerName = "KE11DURK" Or ComputerName = "PRFLP02-GAURAB" Or ComputerName = "USER-HP" Or ComputerName = "DESKTOP-LCAKG6V" Or ComputerName = "DISHA") Then
+
+
+'Unhide all worksheets
+    Application.ScreenUpdating = False
+    Call ShowAllSheets
+    Application.ScreenUpdating = True
+Else
+MsgBox "Not Authorized as Your Computer Name is : " & ComputerName
+ThisWorkbook.Close (False)
+
+End If
+
+End Sub
+
+Private Sub CustomSave(Optional SaveAs As Boolean)
+    Dim ws As Worksheet, aWs As Worksheet, newFname As String
+    'Turn off screen flashing
+    Application.ScreenUpdating = False
+    
+    'Record active worksheet
+    Set aWs = ActiveSheet
+    
+    'Hide all sheets
+    Call HideAllSheets
+    
+    'Save workbook directly or prompt for saveas filename
+    If SaveAs = True Then
+        newFname = Application.GetSaveAsFilename( _
+            fileFilter:="Excel Files (*.xls), *.xls")
+        If Not newFname = "False" Then ThisWorkbook.SaveAs newFname
+    Else
+        ThisWorkbook.Save
+    End If
+    
+    'Restore file to where user was
+    Call ShowAllSheets
+    aWs.Activate
+    
+    'Restore screen updates
+    Application.ScreenUpdating = True
+End Sub
+
+Private Sub HideAllSheets()
+    'Hide all worksheets except the macro welcome page
+    Dim ws As Worksheet
+    
+    Worksheets(WelcomePage).Visible = xlSheetVisible
+    
+    For Each ws In ThisWorkbook.Worksheets
+        If Not ws.Name = WelcomePage Then ws.Visible = xlSheetVeryHidden
+    Next ws
+    
+    Worksheets(WelcomePage).Activate
+End Sub
+
+Private Sub ShowAllSheets()
+
+    'Show all worksheets except the macro welcome page
+  
+    Dim ws As Worksheet
+    Dim Sh As Variant
+    Dim Ws_Array As Variant
+
+    Set Ws_Array = Sheets(Array("Principal-Sales", "Customer-Unit-Sales", "Customer-Value-Sales", "Product-Sales"))
+    For Each ws In Ws_Array
+    Worksheets(ws.Name).Visible = xlSheetVisible
+    
+Next
+Worksheets(WelcomePage).Visible = xlSheetVeryHidden
+End Sub
+
+Private Sub Workbook_SheetBeforeRightClick _
+(ByVal Sh As Object, ByVal Target As Range, Cancel As Boolean)
+
+
+Cancel = True
+MsgBox ("Right Click is Disbaled")
+End Sub
+
+Private Sub Workbook_Activate()
+Application.CutCopyMode = False
+Application.OnKey "^c", ""
+Application.CellDragAndDrop = False
+End Sub
+ 
+Private Sub Workbook_Deactivate()
+Application.CellDragAndDrop = True
+Application.OnKey "^c"
+Application.CutCopyMode = False
+End Sub
+ 
+Private Sub Workbook_WindowActivate(ByVal Wn As Window)
+Application.CutCopyMode = False
+Application.OnKey "^c", ""
+Application.CellDragAndDrop = False
+End Sub
+ 
+Private Sub Workbook_WindowDeactivate(ByVal Wn As Window)
+Application.CellDragAndDrop = True
+Application.OnKey "^c"
+Application.CutCopyMode = False
+End Sub
+ 
+Private Sub Workbook_SheetSelectionChange(ByVal Sh As Object, ByVal Target As Range)
+Application.CutCopyMode = False
+End Sub
+ 
+Private Sub Workbook_SheetActivate(ByVal Sh As Object)
+Application.OnKey "^c", ""
+Application.CellDragAndDrop = False
+Application.CutCopyMode = False
+End Sub
+ 
+Private Sub Workbook_SheetDeactivate(ByVal Sh As Object)
+Application.CutCopyMode = False
+End Sub
+
+Private Sub Workbook_BeforePrint(Cancel As Boolean)
+  Cancel = True
+  MsgBox "You do not have permission to print this file", vbOKOnly, "Cannot Print"
+End Sub
+
+Private Sub Worksheet_Change(ByVal Target As Range)
+   
+Application.CommandBars("Ply").Enabled = True
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
